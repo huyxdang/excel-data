@@ -16,19 +16,19 @@ pip install openpyxl --break-system-packages
 
 ```bash
 # Print to screen
-python brd_converter_simple.py input.xlsx
+python brd_converter.py BRD_input.xlsx
 
 # Save to file
-python brd_converter_simple.py input.xlsx output.csv
+python brd_converter.py input.xlsx output.csv
 
 # Specific sheet
-python brd_converter_simple.py input.xlsx output.csv "Requirements"
+python brd_converter.py input.xlsx output.csv "Requirements"
 ```
 
 ### Python Code
 
 ```python
-from brd_converter_simple import excel_to_csv, convert_file
+from brd_converter import excel_to_csv, convert_file
 
 # Get CSV string
 csv_string = excel_to_csv('brd.xlsx')
