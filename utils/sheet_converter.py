@@ -1,5 +1,5 @@
 """
-BRD Converter - Excel to Markdown-ready CSV
+BRD Sheet Converter - Excel Sheet to Markdown-ready CSV
 
 Converts Excel worksheets to CSV format with cell coordinates and markdown image
 references. Designed for LLM processing pipelines that need structured data with
@@ -22,10 +22,10 @@ Excel .xlsx structure:
     │   └── media/image1.png         # Actual image files
 
 Usage:
-    python brd_converter.py <excel_file> [output_csv] [sheet_name]
+    python sheet_converter.py <excel_file> [output_csv] [sheet_name]
 
 Example:
-    python brd_converter.py input.xlsx output.csv "5.1.2a"
+    python sheet_converter.py input.xlsx output.csv "5.1.2a"
 
 Output:
     output.csv              # CSV with markdown image references
@@ -361,7 +361,16 @@ def excel_to_csv(excel_path: str, sheet_name: str = None, output_dir: str = '.')
             if cell_coord in image_dict:
                 row_values.append(f"{cell_coord}: {image_dict[cell_coord]}")
             elif cell.value is not None:
-                value = str(cell.value).replace(',', '\\,')
+                value = str(cell.value)
+                # Cell contains: "Line 1
+                #                 Line 2"
+                # value is now: "Line 1\nLine 2" (with actual newline character)
+                
+                value = value.replace('\n', '\\n')
+                # value is now: "Line 1\\nLine 2" 
+                # The \n (actual newline) becomes \\n (backslash + letter n)
+                # In the file it will display as: Line 1\nLine 2
+                
                 row_values.append(f"{cell_coord}: {value}")
             else:
                 row_values.append(f"{cell_coord}:")

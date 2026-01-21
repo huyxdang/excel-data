@@ -1,15 +1,16 @@
 """
-BRD Orchestrator - Process all sheets in an Excel file
+BRD Converter - Converts an entire Excel workbook to a single CSV file
 
-Orchestrates the conversion of an entire Excel workbook to a single CSV file
-with all sheets processed sequentially. Each sheet's images are extracted
+With all sheets processed sequentially
+
+Each sheet's images are extracted
 and all content is aggregated into one final output.
 
 Usage:
-    python orchestrator.py <excel_file> [output_csv]
+    python excel_converter.py <excel_file> [output_csv]
 
 Example:
-    python orchestrator.py BRD_input.xlsx final_output.csv
+    python excel_converter.py BRD_input.xlsx final_output.csv
 
 Output:
     final_output.csv        # Combined CSV with all sheets
@@ -24,8 +25,7 @@ import sys
 import os
 from typing import List
 
-# Try importing from either filename
-from brd_converter import excel_to_csv
+from utils.sheet_converter import excel_to_csv
 
 def get_all_sheet_names(excel_path: str) -> List[str]:
     """
@@ -197,11 +197,11 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print(__doc__)
         print("\nAvailable commands:")
-        print("  python orchestrator.py <excel_file> [output_csv]")
+        print("  python excel_converter.py <excel_file> [output_csv]")
         print("      Process all sheets")
-        print("\n  python orchestrator.py <excel_file> [output_csv] --sheets 'Sheet1,Sheet2,Sheet3'")
+        print("\n  python excel_converter.py <excel_file> [output_csv] --sheets 'Sheet1,Sheet2,Sheet3'")
         print("      Process only specified sheets (comma-separated)")
-        print("\n  python orchestrator.py <excel_file> --list")
+        print("\n  python excel_converter.py <excel_file> --list")
         print("      List all sheet names without processing")
         sys.exit(1)
     

@@ -28,6 +28,8 @@ Notes:
 - A sheet may have different column ranges than other sheets.
 - A sheet may contain images represented as Markdown image syntax inside a cell.
 - Empty cell values may appear as blank after the colon (e.g. "B1:").
+- The literal sequence `\n` inside a cell value represents an explicit line break
+  and MUST be converted into a real newline in the output Markdown.
 
 Cells are ordered row-major (left → right, top → bottom) within each sheet.
 
@@ -47,6 +49,11 @@ Each cell assignment is:
 - empty
 - an image reference in Markdown form:
   ![<alt_text>](<relative_path>)
+
+Special handling:
+- If a cell value contains the literal characters `\n`, this indicates a line
+  break originating from the Excel cell. You must emit this as an actual newline
+  in the reconstructed Markdown content (not as the characters `\` and `n`).
 
 Images are treated as data (not visual hints). They must be preserved exactly.
 
@@ -105,6 +112,7 @@ Do not remove any column that contains any other content (including images).
 
 6) Non-table content
 - Cells outside tables must be emitted as plain Markdown text.
+- Preserve intra-cell line breaks produced from `\n`.
 - Use headings (#, ##, etc.) only if clearly implied (e.g., a prominent title row).
 - Do not invent hierarchy or semantics.
 
