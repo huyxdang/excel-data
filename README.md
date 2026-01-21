@@ -55,7 +55,7 @@ python excel_converter.py <excel_file> [output_csv]
 
 **Example:**
 ```bash
-python excel_converter.py BRD_input.xlsx output.csv
+python excel_converter.py data/BRD_input.xlsx output.csv
 ```
 
 **Output Files:**
@@ -75,12 +75,12 @@ images/
 
 **List all sheets without processing:**
 ```bash
-python excel_converter.py BRD_input.xlsx --list
+python excel_converter.py data/BRD_input.xlsx --list
 ```
 
 **Process only selected sheets:**
 ```bash
-python excel_converter.py BRD_input.xlsx output.csv --sheets "5.1.1a" "5.1.2b" "Status"
+python excel_converter.py data/BRD_input.xlsx output.csv --sheets "5.1.1a" "5.1.2b" "Status"
 ```
 
 ## 📁 CSV Structure
@@ -114,12 +114,12 @@ A2: Design Phase,B2: Alice,C2: 2026-02-15
 - Image references use Markdown syntax: `![image](images/<filename>.png)`
 
 
-## 🛠️ Testing and Performance
+## 🛠️ Test Performance
 
-Run test to measure conversion speed and output quality:
+Run test to measure Excel -> CSV conversion speed and output quality:
 
 ```bash
-python measure.py BRD_input.xlsx output.csv
+python test/measure.py data/BRD_input.xlsx output.csv
 ```
 
 

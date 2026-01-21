@@ -22,6 +22,9 @@ from typing import Dict, List
 from dataclasses import dataclass, field
 import time
 
+# Add parent directory to path to import modules from root
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 # Import the converter we're testing
 from excel_converter import process_all_sheets, get_all_sheet_names
 
