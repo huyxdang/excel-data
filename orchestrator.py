@@ -17,8 +17,6 @@ Output:
         5_1_2a_B6_image2.png
         5_2_1a_C10_image3.png
         ...
-
-*Note: Each image is named by the pattern {sheetname}_{coordinate}_imagenumber.png
 """
 
 from openpyxl import load_workbook
@@ -26,7 +24,11 @@ import sys
 import os
 from typing import List
 
-from brd_converter_final import excel_to_csv
+# Try importing from either filename
+try:
+    from brd_converter_final import excel_to_csv
+except ImportError:
+    from brd_converter import excel_to_csv
 
 
 def get_all_sheet_names(excel_path: str) -> List[str]:
