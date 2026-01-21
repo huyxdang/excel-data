@@ -1,1 +1,0 @@
-- Cannot handle images yet 
