@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 from dotenv import load_dotenv
 import anthropic
 import csv
@@ -42,18 +43,18 @@ def load_prompt() -> str:
     return read_file(prompt_path)
 
 
-def split_csv_into_chunks(csv_content: str, max_rows: int = MAX_ROWS_PER_CHUNK) -> list[tuple[str, list[str]]]:
+def split_csv_into_chunks(csv_content: str, max_rows: int = MAX_ROWS_PER_CHUNK) -> list[tuple[str, str]]:
     """
     Split CSV into chunks, preserving headers.
     
     Returns:
-        List of (chunk_csv_string, row_indices) tuples
+        List of (chunk_csv_string, row_info) tuples
     """
     reader = csv.reader(StringIO(csv_content))
     rows = list(reader)
     
     if len(rows) <= 1:
-        return [(csv_content, [])]
+        return [(csv_content, "all rows")]
     
     header = rows[0]
     data_rows = rows[1:]
@@ -75,9 +76,29 @@ def split_csv_into_chunks(csv_content: str, max_rows: int = MAX_ROWS_PER_CHUNK) 
     return chunks
 
 
+def format_duration(seconds: float) -> str:
+    """Format duration in human-readable format."""
+    if seconds < 60:
+        return f"{seconds:.2f}s"
+    elif seconds < 3600:
+        minutes = int(seconds // 60)
+        secs = seconds % 60
+        return f"{minutes}m {secs:.2f}s"
+    else:
+        hours = int(seconds // 3600)
+        minutes = int((seconds % 3600) // 60)
+        secs = seconds % 60
+        return f"{hours}h {minutes}m {secs:.2f}s"
+
+
 def convert_chunk_to_markdown(client: anthropic.Anthropic, system_prompt: str, 
-                              csv_chunk: str, chunk_info: str, is_continuation: bool = False) -> str:
-    """Convert a single CSV chunk to Markdown."""
+                              csv_chunk: str, chunk_info: str, is_continuation: bool = False) -> tuple[str, float, dict]:
+    """
+    Convert a single CSV chunk to Markdown.
+    
+    Returns:
+        Tuple of (markdown_content, latency_seconds, usage_stats)
+    """
     
     if is_continuation:
         user_message = f"""Continue converting the CSV to Markdown. This is {chunk_info}.
@@ -90,8 +111,10 @@ CSV chunk:
 
 {csv_chunk}"""
     
+    start_time = time.time()
+    
     message = client.messages.create(
-        model="claude-sonnet-4-5-20250514",
+        model="claude-sonnet-4-5-20250929",
         max_tokens=16000,
         system=system_prompt,
         messages=[
@@ -102,13 +125,22 @@ CSV chunk:
         ]
     )
     
-    return message.content[0].text
+    latency = time.time() - start_time
+    
+    usage_stats = {
+        "input_tokens": message.usage.input_tokens,
+        "output_tokens": message.usage.output_tokens,
+    }
+    
+    return message.content[0].text, latency, usage_stats
 
 
 def convert_csv_to_markdown(csv_path: str, output_md_path: str = None) -> str:
     """
     Convert CSV file to Markdown using Claude API with chunking.
     """
+    total_start_time = time.time()
+    
     # Read input CSV
     csv_content = read_file(csv_path)
     
@@ -123,20 +155,44 @@ def convert_csv_to_markdown(csv_path: str, output_md_path: str = None) -> str:
     total_chunks = len(chunks)
     
     print(f"📊 CSV split into {total_chunks} chunk(s)", file=sys.stderr)
+    print(f"{'─' * 60}", file=sys.stderr)
     
     markdown_parts = []
+    chunk_latencies = []
+    total_input_tokens = 0
+    total_output_tokens = 0
     
     for i, (chunk_csv, chunk_info) in enumerate(chunks):
-        print(f"🔄 Processing chunk {i+1}/{total_chunks} ({chunk_info})...", file=sys.stderr)
+        print(f"🔄 Processing chunk {i+1}/{total_chunks} ({chunk_info})...", file=sys.stderr, end=" ")
         
         is_continuation = i > 0
-        markdown_part = convert_chunk_to_markdown(
+        markdown_part, latency, usage = convert_chunk_to_markdown(
             client, system_prompt, chunk_csv, chunk_info, is_continuation
         )
+        
         markdown_parts.append(markdown_part)
+        chunk_latencies.append(latency)
+        total_input_tokens += usage["input_tokens"]
+        total_output_tokens += usage["output_tokens"]
+        
+        print(f"✓ {format_duration(latency)} ({usage['input_tokens']:,} in / {usage['output_tokens']:,} out)", file=sys.stderr)
     
     # Combine all parts
     markdown_content = "\n\n".join(markdown_parts)
+    
+    # Calculate statistics
+    total_time = time.time() - total_start_time
+    avg_latency = sum(chunk_latencies) / len(chunk_latencies) if chunk_latencies else 0
+    
+    # Print summary
+    print(f"{'─' * 60}", file=sys.stderr)
+    print(f"📈 SUMMARY", file=sys.stderr)
+    print(f"   Total time:      {format_duration(total_time)}", file=sys.stderr)
+    print(f"   Avg per chunk:   {format_duration(avg_latency)}", file=sys.stderr)
+    print(f"   Min chunk time:  {format_duration(min(chunk_latencies))}", file=sys.stderr)
+    print(f"   Max chunk time:  {format_duration(max(chunk_latencies))}", file=sys.stderr)
+    print(f"   Total tokens:    {total_input_tokens + total_output_tokens:,} ({total_input_tokens:,} in / {total_output_tokens:,} out)", file=sys.stderr)
+    print(f"{'─' * 60}", file=sys.stderr)
     
     # Save or print output
     if output_md_path:
