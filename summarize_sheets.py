@@ -40,28 +40,18 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-SUMMARIZATION_PROMPT = """Read this sheet from a Business Requirements Document and analyze it.
-
-Sheet name: {sheet_name}
-Sheet content (CSV format):
-
+SUMMARIZATION_PROMPT = """Đọc sheet này từ tài liệu Yêu cầu Nghiệp vụ (BRD) và phân tích nội dung.
+Tên sheet: {sheet_name}
+Nội dung sheet (định dạng CSV):
 {content}
-
-Please output:
-
-1. **Sheet type**: Classify as one of: overview/process/ui/specs/data-model/other
-
-2. **Main topic/title**: What is the main subject or purpose of this sheet?
-
-3. **Key information summary**: Provide 2-3 paragraphs summarizing the essential information, business logic, and requirements contained in this sheet.
-
-4. **Stakeholders/roles mentioned**: List any people, teams, roles, or departments mentioned.
-
-5. **Requirements found**: Extract any explicit requirements, specifications, or constraints (if any).
-
-6. **Related sheets**: Identify any references to other sheets, documents, or systems (look for hyperlinks, references, or mentions).
-
-Provide your analysis in natural language markdown format (NOT JSON). Be concise but comprehensive."""
+Vui lòng đưa ra:
+1. **Loại sheet**: Phân loại là một trong các loại: tổng-quan/quy-trình/giao-diện/đặc-tả/mô-hình-dữ-liệu/khác
+2. **Chủ đề/tiêu đề chính**: Chủ đề hoặc mục đích chính của sheet này là gì?
+3. **Tóm tắt thông tin chính**: Cung cấp 2-3 đoạn văn tóm tắt các thông tin thiết yếu, logic nghiệp vụ và yêu cầu trong sheet này.
+4. **Các bên liên quan/vai trò được đề cập**: Liệt kê các cá nhân, nhóm, vai trò hoặc phòng ban được đề cập.
+5. **Các yêu cầu tìm thấy**: Trích xuất các yêu cầu, đặc tả hoặc ràng buộc rõ ràng (nếu có).
+6. **Các sheet liên quan**: Xác định các tham chiếu đến sheet khác, tài liệu hoặc hệ thống khác (tìm các hyperlink, tham chiếu hoặc đề cập).
+Trình bày phân tích của bạn dưới dạng markdown ngôn ngữ tự nhiên (KHÔNG phải JSON). Ngắn gọn nhưng đầy đủ."""
 
 
 def load_csv_content(csv_path: str, max_rows: int = 500) -> tuple[str, int]:
