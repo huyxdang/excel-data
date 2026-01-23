@@ -34,7 +34,8 @@ load_dotenv()
 
 
 # System prompt for BRD synthesis
-SYSTEM_PROMPT = """# Business Requirements Document (BRD) Synthesis Engine  
+SYSTEM_PROMPT = """
+# Business Requirements Document (BRD) Synthesis Engine  
 
 ---
 
@@ -65,41 +66,47 @@ Each summary contains:
 
 ## CRITICAL: Section Structure and Internal Linking
 
-### The Approach: Clean Title-Based Headers with Standard Markdown Anchors
+### The Approach: Numbered Sections with English Titles and Vietnamese Content
 
-Use **clean section titles** without any `{#id}` syntax. Standard Markdown automatically generates anchors from heading text.
+Use **numbered section titles in English** with **all content in Vietnamese**. Standard Markdown automatically generates anchors from heading text.
 
 ```markdown
-### Create Warehouse Intake Request
+### 4.1. Asset Dashboard Module
+
+Module này cung cấp bảng điều khiển tổng quan về tài sản...
 ```
 
-This auto-generates the anchor `#create-warehouse-intake-request` which can be linked to.
+This auto-generates the anchor `#41-asset-dashboard-module` which can be linked to.
 
 ### Rules for Section Headers
 
-1. **Use the sheet's title as the header**, not the sheet ID
-2. **Do NOT add `{#SHEET_ID}` or any anchor syntax** - keep headers clean
-3. **For related sheets (e.g., 5.1.1a UI + 5.1.1b Specs)**, combine into ONE section:
-   ```markdown
-   ### Create Warehouse Intake Request
-   ```
-4. **The Source Traceability Matrix** maps sheet IDs to section titles for reference
+1. **All section titles must be in English** with numbered format (e.g., 1., 2.1., 4.2.3.)
+2. **All content within sections must be in Vietnamese**
+3. **Keep headers clean** - no `{#id}` syntax or sheet references
+4. **For related sheets (e.g., 5.1.1a UI + 5.1.1b Specs)**, combine into ONE numbered section
+
+### Numbering Convention
+
+- **Level 1:** 1., 2., 3., 4., etc. (e.g., "1. Executive Summary")
+- **Level 2:** 1.1., 1.2., 2.1., 2.2., etc. (e.g., "4.1. Asset Dashboard Module")
+- **Level 3:** 1.1.1., 1.1.2., 2.1.1., etc. (e.g., "4.2.1. Create Warehouse Intake Request")
+- **Level 4:** 1.1.1.1., 1.1.1.2., etc. (if needed for detailed subsections)
 
 ### Rules for Internal Links
 
 Use **title-based anchors** derived from section headings. Markdown auto-generates anchors by:
 - Converting to lowercase
 - Replacing spaces with hyphens
-- Removing special characters
+- Removing special characters and periods
 
 **Examples:**
-- `### Create Warehouse Intake Request` → anchor: `#create-warehouse-intake-request`
-- `### Warehouse Management Module` → anchor: `#warehouse-management-module`
-- `### Asset Dashboard` → anchor: `#asset-dashboard`
+- `### 1. Executive Summary` → anchor: `#1-executive-summary`
+- `### 4.1. Asset Dashboard Module` → anchor: `#41-asset-dashboard-module`
+- `### 4.2.1. Create Warehouse Intake Request` → anchor: `#421-create-warehouse-intake-request`
 
-**Link format:**
+**Link format (Vietnamese text with English anchor):**
 ```markdown
-See the [Create Warehouse Intake Request](#create-warehouse-intake-request) section.
+Xem phần [4.2.1. Create Warehouse Intake Request](#421-create-warehouse-intake-request) để biết thêm chi tiết.
 ```
 
 **NEVER use:**
@@ -115,34 +122,34 @@ You MUST actively create internal links throughout the document using title-base
 
 1. **Parent sections linking to children:**
    ```markdown
-   ### Warehouse Management Module
+   ### 4.2. Warehouse Management Module
    
-   This module includes the following processes:
-   - [Create Warehouse Intake Request](#create-warehouse-intake-request)
-   - [Approve Warehouse Entry Request](#approve-warehouse-entry-request)
-   - [Warehouse Receipt Confirmation](#warehouse-receipt-confirmation)
+   Module này bao gồm các quy trình sau:
+   - [4.2.1. Create Warehouse Intake Request](#421-create-warehouse-intake-request)
+   - [4.2.2. Approve Warehouse Entry Request](#422-approve-warehouse-entry-request)
+   - [4.2.3. Warehouse Receipt Confirmation](#423-warehouse-receipt-confirmation)
    ```
 
 2. **Related sections linking to each other:**
    ```markdown
-   ### Create Warehouse Intake Request
+   ### 4.2.1. Create Warehouse Intake Request
    
-   After creation, requests proceed to the [approval process](#approve-warehouse-entry-request).
-   For cancellation procedures, see [Cancel Warehouse Entry Request](#cancel-warehouse-entry-request).
+   Sau khi tạo yêu cầu, quy trình chuyển sang [4.2.2. quy trình phê duyệt](#422-approve-warehouse-entry-request).
+   Để biết quy trình hủy, xem [4.2.4. Cancel Warehouse Entry Request](#424-cancel-warehouse-entry-request).
    ```
 
 3. **When requirements mention other processes:**
    ```markdown
-   **Workflow:**
-   1. System creates intake request
-   2. Status updates trigger [approval workflow](#approve-warehouse-entry-request)
-   3. Upon approval, proceeds to [warehouse receipt confirmation](#warehouse-receipt-confirmation)
+   **Quy trình làm việc:**
+   1. Hệ thống tạo yêu cầu nhập kho
+   2. Cập nhật trạng thái kích hoạt [quy trình phê duyệt](#422-approve-warehouse-entry-request)
+   3. Sau khi phê duyệt, chuyển sang [xác nhận nhập kho](#423-warehouse-receipt-confirmation)
    ```
 
 4. **In the Executive Summary and Overview sections:**
    ```markdown
-   Key deliverables include a [comprehensive warehouse management module](#warehouse-management-module) 
-   and [asset maintenance capabilities](#asset-maintenance-module).
+   Các sản phẩm chính bao gồm [module quản lý kho toàn diện](#42-warehouse-management-module) 
+   và [khả năng bảo trì tài sản](#43-asset-maintenance-module).
    ```
 
 **Minimum requirements:**
@@ -152,10 +159,6 @@ You MUST actively create internal links throughout the document using title-base
 - Each section MUST link to at least one related section where logical
 
 **The goal:** A reader should be able to navigate the entire document by clicking links, not just scrolling.
-
-### Source Traceability Matrix
-
-The **Appendix: Source Traceability Matrix** provides the mapping from original sheet IDs to BRD sections. This is where readers can look up "Where is sheet 5.1.2a content?" without needing direct anchors.
 
 ---
 
@@ -167,42 +170,42 @@ Each sheet summary contains valuable information. You must **preserve the full c
 
 **BAD (loses detail):**
 ```markdown
-### Warehouse Management
-- Supports warehouse transfers [5.1.1a](#5.1.1a)
-- Has approval workflows [5.1.2a](#5.1.2a)
+### 4.2. Warehouse Management
+- Hỗ trợ chuyển kho
+- Có quy trình phê duyệt
 ```
 
 **GOOD (preserves detail):**
 ```markdown
-### Create Warehouse Intake Request {#5.1.1a} {#5.1.1b}
+### 4.2.1. Create Warehouse Intake Request
 
-#### UI Specifications
+#### 4.2.1.1. Thông số kỹ thuật giao diện người dùng
 
-This process handles automated warehouse intake request creation when assets are transferred to a warehouse. The system automatically generates intake requests based on existing transfer requests, inheriting data including asset information, warehouse details, and attached documents.
+Quy trình này xử lý việc tạo yêu cầu nhập kho tự động khi tài sản được chuyển đến kho. Hệ thống tự động tạo yêu cầu nhập kho dựa trên các yêu cầu chuyển kho hiện có, kế thừa dữ liệu bao gồm thông tin tài sản, chi tiết kho và tài liệu đính kèm.
 
-**Form Structure:**
-- General information (request number, creation date, title)
-- Asset inventory details (codes, names, descriptions, categories, PO numbers)
-- Warehouse information (name, address, manager)
-- Delivery coordination details
-- File attachments
+**Cấu trúc biểu mẫu:**
+- Thông tin chung (số yêu cầu, ngày tạo, tiêu đề)
+- Chi tiết kiểm kê tài sản (mã, tên, mô tả, danh mục, số PO)
+- Thông tin kho (tên, địa chỉ, người quản lý)
+- Chi tiết phối hợp giao hàng
+- Tệp đính kèm
 
-**Stakeholders:** System, Warehouse Manager (WM), AMP, Suppliers, Asset Users
+**Các bên liên quan:** Hệ thống, Quản lý kho (WM), AMP, Nhà cung cấp, Người dùng tài sản
 
-#### Technical Specifications
+#### 4.2.1.2. Thông số kỹ thuật chi tiết
 
-**Field Requirements:**
-- Request numbers must follow format "NK.YY.xxxx" (YY=year, xxxx=sequential 1-9999)
-- Maximum field lengths: 50, 150, 52 characters for different fields
-- Date format: MM.DD.YYYY
+**Yêu cầu trường dữ liệu:**
+- Số yêu cầu phải tuân theo định dạng "NK.YY.xxxx" (YY=năm, xxxx=số thứ tự 1-9999)
+- Độ dài trường tối đa: 50, 150, 52 ký tự cho các trường khác nhau
+- Định dạng ngày: MM.DD.YYYY
 
-**Workflow:**
-1. System creates intake request with inherited data
-2. Status updates: Transfer RQ → "Confirmed", Intake RQ → "Pending Approval"
-3. Task list updates: AMP → "Processed", WM → "Needs Processing"
-4. Email notification sent to warehouse managers
+**Quy trình làm việc:**
+1. Hệ thống tạo yêu cầu nhập kho với dữ liệu kế thừa
+2. Cập nhật trạng thái: Yêu cầu chuyển kho → "Đã xác nhận", Yêu cầu nhập kho → "Chờ phê duyệt"
+3. Cập nhật danh sách công việc: AMP → "Đã xử lý", WM → "Cần xử lý"
+4. Gửi email thông báo đến quản lý kho
 
-**System Integration:** OMS, Tasklist AMP/WM, Email notification system, Asset locking mechanism
+**Tích hợp hệ thống:** OMS, Danh sách công việc AMP/WM, Hệ thống thông báo email, Cơ chế khóa tài sản
 ```
 
 ---
@@ -215,82 +218,82 @@ Sheets often come in pairs:
 
 ### How to Handle Pairs
 
-Combine paired sheets into **one section with two subsections**:
+Combine paired sheets into **one numbered section with two subsections**:
 
 ```markdown
-### [Title from the sheets] {#5.1.1a} {#5.1.1b}
+### 4.2.1. [English Title from the sheets]
 
-#### UI Specifications
-[Content from 5.1.1a - process flow, user interface, stakeholder interactions]
+#### 4.2.1.1. Thông số kỹ thuật giao diện người dùng
+[Vietnamese content from "a" sheet - process flow, user interface, stakeholder interactions]
 
-#### Technical Specifications
-[Content from 5.1.1b - field requirements, validation rules, system behaviors]
+#### 4.2.1.2. Thông số kỹ thuật chi tiết
+[Vietnamese content from "b" sheet - field requirements, validation rules, system behaviors]
 ```
 
 If a sheet has no pair (only "a" or only "b" exists), create a standalone section:
 
 ```markdown
-### [Title] {#5.1.1a}
+### 4.2.1. [English Title]
 
-[Full content from the sheet]
+[Vietnamese content from the sheet]
 ```
 
 ---
 
 ## BRD Output Structure
 
-Organize the synthesized content into this structure:
+Organize the synthesized content into this numbered structure:
 
-1. **Table of Contents** ← NEW
-   - List all major sections with internal links
+### 1. Table of Contents
+   - List all major sections with internal links and numbers
    - Include subsections for Business Requirements
    - Example:
 ```markdown
-   ## Table of Contents
-   
-   1. [Executive Summary](#executive-summary)
-   2. [Project Scope & Objectives](#project-scope-objectives)
-   3. [Stakeholders](#stakeholders)
-   4. [Business Requirements](#business-requirements)
-      - [Asset Dashboard Module](#asset-dashboard-module)
-      - [Warehouse Management Module](#warehouse-management-module)
-        - [Create Warehouse Intake Request](#create-warehouse-intake-request)
-        - [Approve Warehouse Entry Request](#approve-warehouse-entry-request)
-      - [Asset Maintenance Module](#asset-maintenance-module)
-   5. [Assumptions & Constraints](#assumptions-constraints)
-   ...
+## Mục lục
+
+1. [Executive Summary](#1-executive-summary)
+2. [Project Scope & Objectives](#2-project-scope--objectives)
+3. [Stakeholders](#3-stakeholders)
+4. [Business Requirements](#4-business-requirements)
+   - 4.1. [Asset Dashboard Module](#41-asset-dashboard-module)
+   - 4.2. [Warehouse Management Module](#42-warehouse-management-module)
+     - 4.2.1. [Create Warehouse Intake Request](#421-create-warehouse-intake-request)
+     - 4.2.2. [Approve Warehouse Entry Request](#422-approve-warehouse-entry-request)
+   - 4.3. [Asset Maintenance Module](#43-asset-maintenance-module)
+5. [Assumptions & Constraints](#5-assumptions--constraints)
+6. [Dependencies](#6-dependencies)
+7. [Acceptance Criteria](#7-acceptance-criteria)
+8. [Glossary](#8-glossary)
 ```
 
-2. **Executive Summary**
-   - High-level project overview
-   - Key deliverables
+### 2. Executive Summary (Vietnamese content)
+   - Tổng quan dự án cấp cao
+   - Các sản phẩm chính
    
-3. **Project Scope & Objectives**
-   - In scope / Out of scope
-   - Project goals
+### 3. Project Scope & Objectives (Vietnamese content)
+   - Trong phạm vi / Ngoài phạm vi
+   - Mục tiêu dự án
    
-4. **Stakeholders**
-   - Consolidated list of all roles mentioned across sheets
+### 4. Stakeholders (Vietnamese content)
+   - Danh sách hợp nhất tất cả các vai trò được đề cập trong các sheet
    
-5. **Business Requirements**
+### 5. Business Requirements (Vietnamese content)
    - **Organized by logical topic** (Dashboard, Asset Management, Warehouse, Maintenance, etc.)
-   - Each sheet becomes its own subsection with full detail preserved
+   - Each sheet becomes its own numbered subsection with full detail preserved
    - Related sheets (a/b pairs) combined as described above
+   - Use numbering: 4.1., 4.2., 4.2.1., 4.2.2., etc.
    
-6. **Assumptions & Constraints**
+### 6. Assumptions & Constraints (Vietnamese content)
 
-7. **Dependencies**
-   - System dependencies
-   - Process dependencies
+### 7. Dependencies (Vietnamese content)
+   - Phụ thuộc hệ thống
+   - Phụ thuộc quy trình
    
-8. **Acceptance Criteria**
+### 8. Acceptance Criteria (Vietnamese content)
    - Derived from requirements found in sheets
    
-9. **Glossary**
+### 9. Glossary (Vietnamese content)
    - Terms and abbreviations found across sheets
-   
-10. **Appendix: Source Traceability Matrix**
-   - Maps each sheet ID to its section in the BRD
 
 ---
 
@@ -318,41 +321,42 @@ Requirements: Field lengths, validation rules, status updates...
 ### Output (BRD Section):
 
 ```markdown
-### Create Warehouse Intake Request
+### 4.2.1. Create Warehouse Intake Request
 
-This process handles automated warehouse intake request creation when assets are transferred to a warehouse.
+Quy trình này xử lý việc tạo yêu cầu nhập kho tự động khi tài sản được chuyển đến kho.
 
-#### UI Specifications
+#### 4.2.1.1. Thông số kỹ thuật giao diện người dùng
 
-[Full content from 5.1.1a including process flow, form structure, user interactions]
+[Nội dung đầy đủ bằng tiếng Việt từ 5.1.1a bao gồm quy trình, cấu trúc biểu mẫu, tương tác người dùng]
 
-**Stakeholders:** WM, AMP, System
+**Các bên liên quan:** WM, AMP, Hệ thống
 
-**Search Functionality:**
-- Filter by request number, creation date, title, creator, status
-- Results displayed in structured list format
+**Chức năng tìm kiếm:**
+- Lọc theo số yêu cầu, ngày tạo, tiêu đề, người tạo, trạng thái
+- Kết quả hiển thị ở định dạng danh sách có cấu trúc
 
-#### Technical Specifications
+#### 4.2.1.2. Thông số kỹ thuật chi tiết
 
-[Full content from 5.1.1b including field requirements, validation, system behaviors]
+[Nội dung đầy đủ bằng tiếng Việt từ 5.1.1b bao gồm yêu cầu trường, xác thực, hành vi hệ thống]
 
-**Field Requirements:**
-- Request number format: NK.YY.xxxx
-- Field lengths: 50-150 characters
-- Date format: MM.DD.YYYY
+**Yêu cầu trường dữ liệu:**
+- Định dạng số yêu cầu: NK.YY.xxxx
+- Độ dài trường: 50-150 ký tự
+- Định dạng ngày: MM.DD.YYYY
 
-**Workflow Logic:**
-1. System creates intake request with inherited data
-2. Status updates trigger [approval workflow](#approve-warehouse-entry-request)
-3. Upon approval, proceeds to [warehouse receipt confirmation](#warehouse-receipt-confirmation)
-4. Email notifications dispatched
+**Luồng xử lý:**
+1. Hệ thống tạo yêu cầu nhập kho với dữ liệu kế thừa
+2. Cập nhật trạng thái kích hoạt [quy trình phê duyệt](#422-approve-warehouse-entry-request)
+3. Sau khi phê duyệt, chuyển sang [xác nhận nhập kho](#423-warehouse-receipt-confirmation)
+4. Gửi thông báo email
 
-After creation, requests proceed to the [approval process](#approve-warehouse-entry-request).
+Sau khi tạo, yêu cầu chuyển sang [quy trình phê duyệt](#422-approve-warehouse-entry-request).
 ```
 
 Note how:
-- The header is CLEAN: `### Create Warehouse Intake Request` (no `{#id}`)
-- Links use title-based anchors: `[approval workflow](#approve-warehouse-entry-request)`
+- The header uses numbered format: `### 4.2.1. Create Warehouse Intake Request` (English title)
+- All content is in Vietnamese
+- Links use numbered anchors: `[quy trình phê duyệt](#422-approve-warehouse-entry-request)`
 - Both sheets (5.1.1a and 5.1.1b) are combined into one section with subsections
 
 ---
@@ -361,29 +365,18 @@ Note how:
 
 Before completing your response, verify:
 
-1. ✅ Every sheet's content appears in a clearly titled section
-2. ✅ Section headers are CLEAN - no `{#id}` syntax, just titles
-3. ✅ All internal links use title-based anchors (e.g., `#create-warehouse-intake-request`)
-4. ✅ Paired sheets (a/b) are combined into single sections
-5. ✅ Full content is preserved - summaries, requirements, stakeholders, field specs
-6. ✅ Sections are organized by logical topic
-7. ✅ Source Traceability Matrix maps ALL sheet IDs to their section titles
-8. ✅ **Parent sections link to their child sections**
-9. ✅ **Workflow descriptions link to related processes**
-10. ✅ **Executive Summary links to major modules**
-11. ✅ **At least 20+ internal links exist in the document**
-
----
-
-## Output Format
-
-- Output **exactly one Markdown document**
-- Use **title-based headers with {#id} anchors**
-- Preserve **full detail** from each sheet
-- Use `[text](#anchor)` for all internal links
-- Include Source Traceability Matrix
-- Professional, enterprise BRD tone
-- No meta-commentary outside the BRD content
+1. ✅ Every section has proper numbering (1., 2.1., 4.2.3., etc.)
+2. ✅ All section titles are in English
+3. ✅ All content within sections is in Vietnamese
+4. ✅ Section headers are CLEAN - no `{#id}` syntax, just numbers and titles
+5. ✅ All internal links use numbered title-based anchors (e.g., `#421-create-warehouse-intake-request`)
+6. ✅ Paired sheets (a/b) are combined into single numbered sections
+7. ✅ Full content is preserved - summaries, requirements, stakeholders, field specs
+8. ✅ Sections are organized by logical topic with proper numbering hierarchy
+9. ✅ **Parent sections link to their child sections**
+10. ✅ **Workflow descriptions link to related processes**
+11. ✅ **Executive Summary links to major modules**
+12. ✅ **At least 20+ internal links exist in the document**
 """
 
 USER_PROMPT_TEMPLATE = """Below are the summaries of {num_sheets} sheets from a Business Requirements Document Excel file.
@@ -391,12 +384,13 @@ USER_PROMPT_TEMPLATE = """Below are the summaries of {num_sheets} sheets from a 
 Please synthesize these into a comprehensive Business Requirements Document following your instructions.
 
 **CRITICAL REMINDERS:**
-1. Use CLEAN section headers (titles only, NO `{{#id}}` syntax)
-2. Combine paired sheets (a/b) into single sections
-3. Preserve FULL content from each sheet - do not summarize into bullet points
-4. Use title-based anchors for links (e.g., `[Approval Process](#approve-warehouse-entry-request)`)
-5. Include Source Traceability Matrix mapping sheet IDs to section titles
+1. Use NUMBERED section headers with English titles (e.g., "4.2.1. Create Warehouse Intake Request")
+2. Write ALL content in Vietnamese
+3. Combine paired sheets (a/b) into single numbered sections
+4. Preserve FULL content from each sheet - do not summarize into bullet points
+5. Use numbered title-based anchors for links (e.g., `[quy trình phê duyệt](#422-approve-warehouse-entry-request)`)
 6. **ADD CROSS-REFERENCES:** Parent sections MUST link to child sections. Aim for 20+ internal links.
+7. Do NOT include source material notes, sheet pairing references, or source traceability matrix
 
 ---
 
@@ -406,7 +400,8 @@ Please synthesize these into a comprehensive Business Requirements Document foll
 
 ---
 
-Please provide the complete BRD in Markdown format with clean headers and extensive internal cross-references."""
+Please provide the complete BRD in Markdown format with numbered English titles, Vietnamese content, and extensive internal cross-references.
+"""
 
 
 def load_all_summaries(summaries_dir: str) -> dict:
@@ -610,8 +605,8 @@ def synthesize_brd(client: Anthropic, summaries: dict, max_tokens: int = 32000) 
                 print(f"  ✅ All broken links fixed!")
         
         # Add generation metadata at the end
-        metadata = f"\n\n---\n\n*Generated by Claude Sonnet 4.5 from {len(summaries)} sheet summaries*\n"
-        metadata += f"*Headings: {len(validation['headings_found'])} | Internal Links: {len(validation['links_found'])}*\n"
+        # metadata = f"\n\n---\n\n*Generated by Claude Sonnet 4.5 from {len(summaries)} sheet summaries*\n"
+        # metadata += f"*Headings: {len(validation['headings_found'])} | Internal Links: {len(validation['links_found'])}*\n"
         
         # Check final validation state
         final_validation = validate_brd_anchors(brd_content, sheet_ids)
