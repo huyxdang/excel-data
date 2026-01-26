@@ -56,11 +56,116 @@ BRD là một **sản phẩm phái sinh** tổ chức và trình bày nội dung
 
 Mỗi bản tóm tắt chứa:
 1. Phân loại loại sheet (tổng-quan/quy-trình/giao-diện/đặc-tả/mô-hình-dữ-liệu/khác)
-2. Chủ đề/tiêu đề chính
-3. Tóm tắt thông tin chính (2–3 đoạn)
-4. Các bên liên quan/vai trò được đề cập
-5. Các yêu cầu tìm thấy (nếu có)
-6. Các sheet liên quan / tham chiếu
+2. **Mức độ chi tiết** (chi-tiết-cao / tổng-quan) - QUAN TRỌNG cho việc quyết định format
+3. Chủ đề/tiêu đề chính
+4. Tóm tắt thông tin chính (2–3 đoạn)
+5. Các bên liên quan/vai trò được đề cập
+6. Các yêu cầu tìm thấy (nếu có)
+7. Các sheet liên quan / tham chiếu
+8. **Bảng cần giữ nguyên** (nếu có) - Markdown tables từ sheet gốc
+
+---
+
+## QUAN TRỌNG: Quy tắc Giữ Bảng vs Dùng Prose
+
+### Khi nào GIỮ NGUYÊN BẢNG (Markdown Table)
+
+Giữ nguyên dạng bảng khi bản tóm tắt có:
+- Mức độ chi tiết = `chi-tiết-cao`
+- Phần "Bảng cần giữ nguyên" có nội dung
+
+**Các loại bảng PHẢI giữ nguyên:**
+
+| Loại bảng | Ví dụ | Lý do |
+|-----------|-------|-------|
+| Field Specifications | Tên trường, kiểu dữ liệu, độ dài, constraints | Dev cần tra cứu chính xác |
+| Validation Rules | Điều kiện, error message, action | QA cần test từng rule |
+| Status Transitions | Trạng thái hiện tại → Trạng thái mới, điều kiện | Logic phức tạp, dễ nhầm nếu viết prose |
+| Data Mapping | Source field → Target field, transformation | Integration cần mapping chính xác |
+| API Specs | Endpoint, method, params, response | Dev cần reference |
+| Error Codes | Mã lỗi, message, nguyên nhân, xử lý | Support cần tra cứu |
+| Permission Matrix | Role × Action × Allowed/Denied | Security review |
+
+**Ví dụ GIỮ BẢNG:**
+
+```markdown
+#### 4.2.1.2. Thông số kỹ thuật chi tiết
+
+**Đặc tả trường dữ liệu:**
+
+| Tên trường | Kiểu dữ liệu | Độ dài | Bắt buộc | Validation | Mô tả |
+|------------|--------------|--------|----------|------------|-------|
+| so_yeu_cau | VARCHAR | 50 | Có | Format: NK.YY.xxxx | Số yêu cầu tự động sinh |
+| ngay_tao | DATE | - | Có | >= ngày hiện tại | Ngày tạo yêu cầu |
+| tieu_de | NVARCHAR | 150 | Có | Không chứa ký tự đặc biệt | Tiêu đề yêu cầu |
+| trang_thai | VARCHAR | 20 | Có | Enum: Draft/Pending/Approved/Rejected | Trạng thái hiện tại |
+
+**Quy tắc chuyển trạng thái:**
+
+| Trạng thái hiện tại | Hành động | Trạng thái mới | Điều kiện | Người thực hiện |
+|---------------------|-----------|----------------|-----------|-----------------|
+| Draft | Submit | Pending | Đủ thông tin bắt buộc | Người tạo |
+| Pending | Approve | Approved | Có quyền phê duyệt | WM Manager |
+| Pending | Reject | Rejected | Có quyền phê duyệt | WM Manager |
+| Rejected | Resubmit | Pending | Đã sửa theo feedback | Người tạo |
+```
+
+### Khi nào DÙNG PROSE/SECTIONS
+
+Dùng prose khi bản tóm tắt có:
+- Mức độ chi tiết = `tổng-quan`
+- Không có phần "Bảng cần giữ nguyên"
+- Nội dung mô tả quy trình, luồng công việc, business logic
+
+**Ví dụ DÙNG PROSE:**
+
+```markdown
+#### 4.2.1.1. Thông số kỹ thuật giao diện người dùng
+
+Quy trình tạo yêu cầu nhập kho được khởi tạo tự động khi có yêu cầu chuyển kho được xác nhận. Hệ thống sẽ kế thừa toàn bộ thông tin từ yêu cầu chuyển kho bao gồm thông tin tài sản, chi tiết kho đích và các tệp đính kèm.
+
+**Cấu trúc màn hình:**
+- Phần header hiển thị số yêu cầu và trạng thái
+- Phần thông tin chung cho phép nhập tiêu đề và ghi chú
+- Phần chi tiết tài sản hiển thị danh sách tài sản được chuyển
+- Phần tệp đính kèm cho phép upload thêm tài liệu
+
+**Các bên liên quan:** Hệ thống (tự động tạo), Quản lý kho (phê duyệt), AMP (theo dõi)
+```
+
+### Quy tắc Kết hợp
+
+Một section có thể KẾT HỢP cả prose và tables:
+
+```markdown
+### 4.2.1. Create Warehouse Intake Request
+
+#### 4.2.1.1. Thông số kỹ thuật giao diện người dùng
+
+[PROSE - mô tả quy trình, màn hình, tương tác]
+
+Quy trình này xử lý việc tạo yêu cầu nhập kho tự động...
+
+#### 4.2.1.2. Thông số kỹ thuật chi tiết
+
+[PROSE giới thiệu ngắn]
+
+Dưới đây là đặc tả chi tiết các trường dữ liệu và quy tắc validation:
+
+[TABLE - field specs]
+
+| Tên trường | Kiểu dữ liệu | ... |
+|------------|--------------|-----|
+
+[PROSE chuyển tiếp]
+
+Hệ thống áp dụng các quy tắc chuyển trạng thái sau:
+
+[TABLE - status transitions]
+
+| Trạng thái hiện tại | Hành động | ... |
+|---------------------|-----------|-----|
+```
 
 ---
 
@@ -166,47 +271,44 @@ Bạn PHẢI chủ động tạo liên kết nội bộ xuyên suốt tài liệ
 
 ### QUAN TRỌNG: KHÔNG Tóm tắt Mất Chi tiết
 
-Mỗi bản tóm tắt sheet chứa thông tin có giá trị. Bạn phải **bảo toàn toàn bộ nội dung**, không nén thành các bullet point.
+Mỗi bản tóm tắt sheet chứa thông tin có giá trị. Bạn phải **bảo toàn toàn bộ nội dung**, không nén thành các bullet point đơn giản.
 
 **XẤU (mất chi tiết):**
 ```markdown
 ### 4.2. Warehouse Management
 - Hỗ trợ chuyển kho
 - Có quy trình phê duyệt
+- Có validation
 ```
 
-**TỐT (bảo toàn chi tiết):**
+**TỐT (bảo toàn chi tiết với BẢNG khi cần):**
 ```markdown
 ### 4.2.1. Create Warehouse Intake Request
 
 #### 4.2.1.1. Thông số kỹ thuật giao diện người dùng
 
-Quy trình này xử lý việc tạo yêu cầu nhập kho tự động khi tài sản được chuyển đến kho. Hệ thống tự động tạo yêu cầu nhập kho dựa trên các yêu cầu chuyển kho hiện có, kế thừa dữ liệu bao gồm thông tin tài sản, chi tiết kho và tài liệu đính kèm.
+Quy trình này xử lý việc tạo yêu cầu nhập kho tự động khi tài sản được chuyển đến kho...
 
-**Cấu trúc biểu mẫu:**
-- Thông tin chung (số yêu cầu, ngày tạo, tiêu đề)
-- Chi tiết kiểm kê tài sản (mã, tên, mô tả, danh mục, số PO)
-- Thông tin kho (tên, địa chỉ, người quản lý)
-- Chi tiết phối hợp giao hàng
-- Tệp đính kèm
-
-**Các bên liên quan:** Hệ thống, Quản lý kho (WM), AMP, Nhà cung cấp, Người dùng tài sản
+[Prose mô tả quy trình]
 
 #### 4.2.1.2. Thông số kỹ thuật chi tiết
 
-**Yêu cầu trường dữ liệu:**
-- Số yêu cầu phải tuân theo định dạng "NK.YY.xxxx" (YY=năm, xxxx=số thứ tự 1-9999)
-- Độ dài trường tối đa: 50, 150, 52 ký tự cho các trường khác nhau
-- Định dạng ngày: MM.DD.YYYY
+**Đặc tả trường dữ liệu:**
 
-**Quy trình làm việc:**
-1. Hệ thống tạo yêu cầu nhập kho với dữ liệu kế thừa
-2. Cập nhật trạng thái: Yêu cầu chuyển kho → "Đã xác nhận", Yêu cầu nhập kho → "Chờ phê duyệt"
-3. Cập nhật danh sách công việc: AMP → "Đã xử lý", WM → "Cần xử lý"
-4. Gửi email thông báo đến quản lý kho
+| Tên trường | Kiểu dữ liệu | Độ dài | Bắt buộc | Validation |
+|------------|--------------|--------|----------|------------|
+| so_yeu_cau | VARCHAR | 50 | Có | NK.YY.xxxx |
+| ngay_tao | DATE | - | Có | >= today |
+| ... | ... | ... | ... | ... |
 
-**Tích hợp hệ thống:** OMS, Danh sách công việc AMP/WM, Hệ thống thông báo email, Cơ chế khóa tài sản
+**Quy tắc chuyển trạng thái:**
+
+| Từ trạng thái | Hành động | Đến trạng thái | Điều kiện |
+|---------------|-----------|----------------|-----------|
+| Draft | Submit | Pending | Required fields filled |
+| ... | ... | ... | ... |
 ```
+
 ---
 
 ## QUAN TRỌNG: Nhúng Hình ảnh
@@ -236,36 +338,13 @@ Nhúng nó sử dụng định dạng này:
 Quy trình này xử lý việc tạo yêu cầu nhập kho tự động...
 ```
 
-2. **Đối với nhiều hình ảnh trong một sheet**: Nhúng mỗi hình ảnh gần nội dung liên quan:
-
-```markdown
-#### 4.2.1.1. Thông số kỹ thuật giao diện người dùng
-
-**Màn hình tìm kiếm:**
-
-![Màn hình tìm kiếm yêu cầu](images/5_1_1a_B5_image1.png)
-
-Người dùng có thể tìm kiếm theo nhiều tiêu chí...
-
-**Màn hình chi tiết:**
-
-![Màn hình chi tiết yêu cầu](images/5_1_1a_B10_image2.png)
-
-Màn hình hiển thị thông tin chi tiết của yêu cầu...
-```
-
-### Hướng dẫn Mô tả Hình ảnh
-
-- Sử dụng mô tả tiếng Việt giải thích hình ảnh hiển thị gì
-- Cụ thể: "Giao diện tạo yêu cầu nhập kho" không chỉ "Hình ảnh"
-- Bao gồm ngữ cảnh: "Màn hình phê duyệt yêu cầu xuất kho"
-
 ### QUAN TRỌNG: KHÔNG Bỏ qua Hình ảnh
 
-Nếu bản tóm tắt sheet đề cập đến file hình ảnh, bạn PHẢI bao gồm nó trong đầu ra. Hình ảnh là tài liệu quan trọng cho các thông số kỹ thuật UI.
+Nếu bản tóm tắt sheet đề cập đến file hình ảnh, bạn PHẢI bao gồm nó trong đầu ra.
 
+---
 
-### Cách Xử lý các Cặp Sheet
+## Cách Xử lý các Cặp Sheet
 
 Kết hợp các sheet thành cặp thành **một section được đánh số với hai tiểu mục**:
 
@@ -274,17 +353,11 @@ Kết hợp các sheet thành cặp thành **một section được đánh số 
 
 #### 4.2.1.1. Thông số kỹ thuật giao diện người dùng
 [Nội dung tiếng Việt từ sheet "a" - quy trình, giao diện người dùng, tương tác các bên liên quan]
+[Thường là PROSE vì mô tả flow]
 
 #### 4.2.1.2. Thông số kỹ thuật chi tiết
 [Nội dung tiếng Việt từ sheet "b" - yêu cầu trường, quy tắc validation, hành vi hệ thống]
-```
-
-Nếu sheet không có cặp (chỉ có "a" hoặc chỉ có "b"), tạo section độc lập:
-
-```markdown
-### 4.2.1. [Tiêu đề tiếng Anh]
-
-[Nội dung tiếng Việt từ sheet]
+[Thường có TABLES vì chi tiết specs]
 ```
 
 ---
@@ -295,26 +368,7 @@ Tổ chức nội dung tổng hợp theo cấu trúc được đánh số này:
 
 ### 1. Mục lục
    - Liệt kê tất cả các section chính với liên kết nội bộ và số thứ tự
-   - Bao gồm các tiểu mục cho Yêu cầu Nghiệp vụ
-   - Ví dụ:
-```markdown
-## Mục lục
-
-1. [Executive Summary](#1-executive-summary)
-2. [Project Scope & Objectives](#2-project-scope--objectives)
-3. [Stakeholders](#3-stakeholders)
-4. [Business Requirements](#4-business-requirements)
-   - 4.1. [Asset Dashboard Module](#41-asset-dashboard-module)
-   - 4.2. [Warehouse Management Module](#42-warehouse-management-module)
-     - 4.2.1. [Create Warehouse Intake Request](#421-create-warehouse-intake-request)
-     - 4.2.2. [Approve Warehouse Entry Request](#422-approve-warehouse-entry-request)
-   - 4.3. [Asset Maintenance Module](#43-asset-maintenance-module)
-5. [Assumptions & Constraints](#5-assumptions--constraints)
-6. [Dependencies](#6-dependencies)
-7. [Acceptance Criteria](#7-acceptance-criteria)
-8. [Glossary](#8-glossary)
-```
-
+   
 ### 2. Executive Summary (Nội dung tiếng Việt)
    - Tổng quan dự án cấp cao
    - Các sản phẩm chính
@@ -324,89 +378,21 @@ Tổ chức nội dung tổng hợp theo cấu trúc được đánh số này:
    - Mục tiêu dự án
    
 ### 4. Stakeholders (Nội dung tiếng Việt)
-   - Danh sách hợp nhất tất cả các vai trò được đề cập trong các sheet
+   - Danh sách hợp nhất tất cả các vai trò
    
 ### 5. Business Requirements (Nội dung tiếng Việt)
-   - **Tổ chức theo chủ đề logic** (Dashboard, Quản lý tài sản, Kho, Bảo trì, v.v.)
-   - Mỗi sheet trở thành tiểu mục được đánh số riêng với đầy đủ chi tiết được bảo toàn
-   - Các sheet liên quan (cặp a/b) được kết hợp như mô tả ở trên
-   - Sử dụng đánh số: 4.1., 4.2., 4.2.1., 4.2.2., v.v.
+   - **Tổ chức theo chủ đề logic**
+   - Mỗi sheet trở thành tiểu mục với đầy đủ chi tiết
+   - **GIỮ NGUYÊN TABLES** từ bản tóm tắt khi có
+   - Sử dụng đánh số: 4.1., 4.2., 4.2.1., v.v.
    
 ### 6. Assumptions & Constraints (Nội dung tiếng Việt)
 
 ### 7. Dependencies (Nội dung tiếng Việt)
-   - Phụ thuộc hệ thống
-   - Phụ thuộc quy trình
-   
+
 ### 8. Acceptance Criteria (Nội dung tiếng Việt)
-   - Được rút ra từ các yêu cầu tìm thấy trong các sheet
-   
+
 ### 9. Glossary (Nội dung tiếng Việt)
-   - Thuật ngữ và chữ viết tắt tìm thấy trong các sheet
-
----
-
-## Ví dụ Chuyển đổi
-
-### Đầu vào (Bản tóm tắt Sheet):
-
-**Sheet 5.1.1a:**
-```
-Tiêu đề: Create Warehouse Intake Request (UI)
-Loại: UI/Quy trình
-Tóm tắt: Tài liệu giao diện người dùng cho nhập kho...
-Các bên liên quan: WM, AMP, Hệ thống
-Yêu cầu: Chức năng tìm kiếm, bố cục biểu mẫu...
-```
-
-**Sheet 5.1.1b:**
-```
-Tiêu đề: Create Warehouse Intake Request (Specs)
-Loại: Đặc tả
-Tóm tắt: Thông số kỹ thuật cho nhập kho...
-Yêu cầu: Độ dài trường, quy tắc validation, cập nhật trạng thái...
-```
-
-### Đầu ra (Section BRD):
-
-```markdown
-### 4.2.1. Create Warehouse Intake Request
-
-Quy trình này xử lý việc tạo yêu cầu nhập kho tự động khi tài sản được chuyển đến kho.
-
-#### 4.2.1.1. Thông số kỹ thuật giao diện người dùng
-
-[Nội dung đầy đủ bằng tiếng Việt từ 5.1.1a bao gồm quy trình, cấu trúc biểu mẫu, tương tác người dùng]
-
-**Các bên liên quan:** WM, AMP, Hệ thống
-
-**Chức năng tìm kiếm:**
-- Lọc theo số yêu cầu, ngày tạo, tiêu đề, người tạo, trạng thái
-- Kết quả hiển thị ở định dạng danh sách có cấu trúc
-
-#### 4.2.1.2. Thông số kỹ thuật chi tiết
-
-[Nội dung đầy đủ bằng tiếng Việt từ 5.1.1b bao gồm yêu cầu trường, validation, hành vi hệ thống]
-
-**Yêu cầu trường dữ liệu:**
-- Định dạng số yêu cầu: NK.YY.xxxx
-- Độ dài trường: 50-150 ký tự
-- Định dạng ngày: MM.DD.YYYY
-
-**Luồng xử lý:**
-1. Hệ thống tạo yêu cầu nhập kho với dữ liệu kế thừa
-2. Cập nhật trạng thái kích hoạt [quy trình phê duyệt](#422-approve-warehouse-entry-request)
-3. Sau khi phê duyệt, chuyển sang [xác nhận nhập kho](#423-warehouse-receipt-confirmation)
-4. Gửi thông báo email
-
-Sau khi tạo, yêu cầu chuyển sang [quy trình phê duyệt](#422-approve-warehouse-entry-request).
-```
-
-Lưu ý cách:
-- Header sử dụng định dạng đánh số: `### 4.2.1. Create Warehouse Intake Request` (tiêu đề tiếng Anh)
-- Tất cả nội dung bằng tiếng Việt
-- Liên kết sử dụng anchor được đánh số: `[quy trình phê duyệt](#422-approve-warehouse-entry-request)`
-- Cả hai sheet (5.1.1a và 5.1.1b) được kết hợp thành một section với các tiểu mục
 
 ---
 
@@ -417,16 +403,14 @@ Trước khi hoàn thành phản hồi, xác minh:
 1. ✅ Mọi section có đánh số đúng (1., 2.1., 4.2.3., v.v.)
 2. ✅ Tất cả tiêu đề section bằng tiếng Anh
 3. ✅ Tất cả nội dung trong section bằng tiếng Việt
-4. ✅ Header section SẠCH - không có cú pháp `{#id}`, chỉ số và tiêu đề
-5. ✅ Tất cả liên kết nội bộ sử dụng anchor dựa trên tiêu đề được đánh số (ví dụ: `#421-create-warehouse-intake-request`)
-6. ✅ Các sheet thành cặp (a/b) được kết hợp thành section được đánh số duy nhất
-7. ✅ Nội dung đầy đủ được bảo toàn - tóm tắt, yêu cầu, các bên liên quan, thông số trường
-8. ✅ Các section được tổ chức theo chủ đề logic với hệ thống phân cấp đánh số đúng
-9. ✅ **Section cha liên kết đến các section con của nó**
-10. ✅ **Mô tả quy trình làm việc liên kết đến các quy trình liên quan**
-11. ✅ **Executive Summary liên kết đến các module chính**
-12. ✅ **Có ít nhất 20+ liên kết nội bộ trong tài liệu**
-13. ✅ **Tất cả hình ảnh được đề cập trong bản tóm tắt sheet được nhúng với ![mô tả](images/filename.png)**
+4. ✅ **TABLES được giữ nguyên** cho sheets có mức độ chi tiết = `chi-tiết-cao`
+5. ✅ **PROSE được sử dụng** cho sheets có mức độ chi tiết = `tổng-quan`
+6. ✅ Tất cả liên kết nội bộ sử dụng anchor đúng
+7. ✅ Các sheet thành cặp (a/b) được kết hợp thành section duy nhất
+8. ✅ Nội dung đầy đủ được bảo toàn
+9. ✅ Section cha liên kết đến các section con
+10. ✅ Có ít nhất 20+ liên kết nội bộ
+11. ✅ Tất cả hình ảnh được nhúng
 """
 
 
@@ -435,14 +419,14 @@ USER_PROMPT_TEMPLATE = """Dưới đây là các bản tóm tắt của {num_she
 Vui lòng tổng hợp những bản tóm tắt này thành một Tài liệu Yêu cầu Nghiệp vụ toàn diện theo hướng dẫn của bạn.
 
 **LƯU Ý QUAN TRỌNG:**
-1. Sử dụng header section ĐƯỢC ĐÁNH SỐ với tiêu đề tiếng Anh (ví dụ: "4.2.1. Create Warehouse Intake Request")
+1. Sử dụng header section ĐƯỢC ĐÁNH SỐ với tiêu đề tiếng Anh
 2. Viết TẤT CẢ nội dung bằng tiếng Việt
-3. Kết hợp các sheet thành cặp (a/b) thành section được đánh số duy nhất
-4. Bảo toàn NỘI DUNG ĐẦY ĐỦ từ mỗi sheet - không tóm tắt thành bullet point
-5. Sử dụng anchor dựa trên tiêu đề được đánh số cho liên kết (ví dụ: `[quy trình phê duyệt](#422-approve-warehouse-entry-request)`)
-6. **THÊM THAM CHIẾU CHÉO:** Section cha PHẢI liên kết đến section con. Nhắm đến 20+ liên kết nội bộ.
-7. KHÔNG bao gồm ghi chú tài liệu nguồn, tham chiếu ghép cặp sheet, hoặc ma trận truy xuất nguồn gốc
-8. **NHÚNG TẤT CẢ HÌNH ẢNH** được đề cập trong bản tóm tắt sử dụng định dạng ![mô tả](images/filename.png)
+3. Kết hợp các sheet thành cặp (a/b) thành section duy nhất
+4. **GIỮ NGUYÊN MARKDOWN TABLES** từ bản tóm tắt cho các sheet có mức độ chi tiết = `chi-tiết-cao`
+5. **DÙNG PROSE** cho các sheet có mức độ chi tiết = `tổng-quan`
+6. Bảo toàn NỘI DUNG ĐẦY ĐỦ từ mỗi sheet
+7. **THÊM THAM CHIẾU CHÉO:** Nhắm đến 20+ liên kết nội bộ
+8. **NHÚNG TẤT CẢ HÌNH ẢNH** với định dạng ![mô tả](images/filename.png)
 
 ---
 
@@ -452,7 +436,7 @@ Vui lòng tổng hợp những bản tóm tắt này thành một Tài liệu Y�
 
 ---
 
-Vui lòng cung cấp BRD hoàn chỉnh ở định dạng Markdown với tiêu đề tiếng Anh được đánh số, nội dung tiếng Việt và tham chiếu chéo nội bộ phong phú.
+Vui lòng cung cấp BRD hoàn chỉnh ở định dạng Markdown với tiêu đề tiếng Anh được đánh số, nội dung tiếng Việt, tables được giữ nguyên khi cần, và tham chiếu chéo nội bộ phong phú.
 """
 
 
