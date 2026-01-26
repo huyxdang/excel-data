@@ -1,89 +1,84 @@
 # Phân tích Sheet: Status
 
 ## 1. Loại sheet
-**quy-trình**
+**quy-trình** - Sheet mô tả các quy trình nghiệp vụ và trạng thái chuyển đổi trong hệ thống quản lý tài sản
 
 ## 2. Mức độ chi tiết
-**chi-tiết-cao**
+**chi-tiết-cao** - Sheet chứa các thông số kỹ thuật về trạng thái, hành động và chuyển đổi trạng thái cụ thể trong từng quy trình
 
 ## 3. Chủ đề/tiêu đề chính
-Định nghĩa các trạng thái (status) và luồng chuyển đổi trạng thái trong hệ thống quản lý tài sản, bao gồm các quy trình cấp tài sản, thanh lý và điều chuyển.
+Định nghĩa các trạng thái và luồng xử lý cho các quy trình quản lý tài sản bao gồm: Cấp tài sản, Thanh lý tài sản và Điều chuyển tài sản
 
 ## 4. Tóm tắt thông tin chính
 
-Sheet này mô tả chi tiết các trạng thái và workflow của ba quy trình chính trong hệ thống quản lý tài sản. Đầu tiên là quy trình **cấp tài sản**, bao gồm hai luồng: cấp tài sản không ở kho (workflow đơn giản với 3 bước) và cấp tài sản từ kho (workflow phức tạp hơn với 6 bước từ tạo yêu cầu đến nhận hàng).
+Sheet Status định nghĩa chi tiết các trạng thái và luồng chuyển đổi trạng thái cho ba quy trình chính trong hệ thống quản lý tài sản. Mỗi quy trình được chia thành các bước con với người chịu tr책nhiệm (PIC) cụ thể và các hành động có thể thực hiện tại mỗi bước.
 
-Thứ hai là quy trình **thanh lý tài sản** với hai phương thức: bán trực tiếp (8 bước) và bán đấu giá (10 bước). Cả hai phương thức đều có các giai đoạn kiểm soát, phê duyệt, cập nhật kết quả và xuất kho tài sản. Quy trình bán đấu giá có thêm bước kiểm soát kết quả thanh lý trước khi phê duyệt cuối cùng.
+Quy trình cấp tài sản được phân thành hai luồng: cấp tài sản không ở kho (3 bước) và cấp tài sản từ kho (6 bước). Quy trình thanh lý tài sản cũng có hai hình thức: bán trực tiếp (8 bước) và bán đấu giá (10 bước). Cuối cùng là quy trình điều chuyển tài sản với hai loại: điều chuyển về kho (6 bước) và điều chuyển giữa các kho (5 bước).
 
-Cuối cùng là quy trình **điều chuyển tài sản**, bao gồm điều chuyển về kho (6 bước) và điều chuyển giữa các kho (5 bước). Mỗi quy trình đều có các checkpoint phê duyệt và xác nhận từ các bên liên quan.
+Mỗi trạng thái đều có định nghĩa rõ ràng về trạng thái yêu cầu (Rq Status), trạng thái tài sản (Asset Status) và các ghi chú quan trọng về việc chuyển đổi trạng thái.
 
 ## 5. Các bên liên quan/vai trò được đề cập
-
-- **AMP**: Asset Management Personnel - Nhân viên quản lý tài sản
-- **BU User**: Business Unit User - Người dùng đơn vị kinh doanh  
-- **BU Head**: Business Unit Head - Trưởng đơn vị kinh doanh
-- **AM**: Asset Manager - Quản lý tài sản
-- **WK**: Warehouse Keeper - Thủ kho
-- **Warehouse Mgr.**: Warehouse Manager - Quản lý kho
-- **Checker**: Người kiểm soát
-- **Approver**: Người phê duyệt
-- **System**: Hệ thống tự động
+- **AMP** (Asset Management Personnel) - Nhân viên quản lý tài sản
+- **BU User** - Người dùng đơn vị kinh doanh  
+- **BU Head** - Trưởng đơn vị kinh doanh
+- **AM** - Asset Manager - Quản lý tài sản
+- **WK** - Warehouse Keeper - Thủ kho
+- **Warehouse Mgr.** - Quản lý kho
+- **Checker** - Người kiểm soát
+- **Approver** - Người phê duyệt
+- **System** - Hệ thống tự động
 
 ## 6. Các yêu cầu tìm thấy
-
-- Hệ thống phải hỗ trợ workflow đa cấp với các trạng thái chuyển đổi rõ ràng
-- Mỗi hành động phải có người thực hiện (PIC) được xác định
-- Hệ thống cần tự động tạo yêu cầu xuất/nhập kho khi cần thiết
-- Phải có cơ chế từ chối, bổ sung thông tin và rollback trạng thái
-- Trạng thái tài sản phải được cập nhật song song với trạng thái yêu cầu
-- Hệ thống cần theo dõi được lịch sử thay đổi trạng thái
+- Hệ thống phải hỗ trợ ít nhất 15 trạng thái khác nhau cho yêu cầu
+- Mỗi bước trong quy trình phải có người chịu trách nhiệm được xác định rõ ràng
+- Hệ thống phải tự động tạo yêu cầu xuất/nhập kho sau khi có phê duyệt
+- Cần có cơ chế từ chối, yêu cầu bổ sung thông tin và hủy bỏ tại các bước
+- Trạng thái tài sản phải được cập nhật tương ứng với trạng thái yêu cầu
 
 ## 7. Các sheet liên quan
-
-Không có tham chiếu trực tiếp đến sheet khác, nhưng có liên quan đến:
-- Sheet định nghĩa vai trò và quyền hạn của các PIC
-- Sheet mô tả chi tiết các quy trình nghiệp vụ
-- Sheet định nghĩa cấu trúc dữ liệu tài sản
+Không có tham chiếu trực tiếp đến sheet khác, nhưng có thể liên quan đến:
+- Sheet định nghĩa quy trình chi tiết
+- Sheet phân quyền người dùng
+- Sheet quản lý kho
 
 ## 8. Bảng cần giữ nguyên
 
-### Bảng State Transitions - Cấp tài sản không ở kho
+### Bảng trạng thái quy trình Cấp tài sản không ở kho
 
-| Sub-process | PIC | Action | Request Status | Asset Status | Note |
-|-------------|-----|--------|----------------|--------------|------|
+| Sub-process | PIC | Action | Rq Status | Asset Status | Note |
+|-------------|-----|---------|-----------|--------------|------|
 | 1 Tạo yêu cầu | AMP | Lưu | Đang tạo | - | - |
-| | | Gửi | Chờ xác nhận | - | - |
+| | AMP | Gửi | Chờ xác nhận | - | - |
 | 2. Xác nhận | BU User | Từ chối | Từ chối | - | - |
-| | | Xác nhận | Đã xác nhận | Đang sử dụng | Đã xác nhận >>> Đã nhận tài sản |
-| | | Bổ sung thông tin | Bổ sung thông tin | - | - |
+| | BU User | Xác nhận | Đã xác nhận | Đang sử dụng | Đã xác nhận >>> Đã nhận tài sản |
+| | BU User | Bổ sung thông tin | Bổ sung thông tin | - | - |
 | 3. Bổ sung TT | AMP | Bổ sung thông tin | Chờ xác nhận | - | - |
 
-### Bảng State Transitions - Cấp tài sản từ kho
+### Bảng trạng thái quy trình Cấp tài sản từ kho
 
-| Sub-process | PIC | Action | Request Status | Warehouse Status | Asset Status |
-|-------------|-----|--------|----------------|------------------|--------------|
+| Sub-process | PIC | Action | Rq Status | Asset Status | Note |
+|-------------|-----|---------|-----------|--------------|------|
 | 1. Tạo yêu cầu | AMP | Lưu | Đang tạo | - | - |
-| | | Gửi | Chờ xác nhận | - | - |
+| | AMP | Gửi | Chờ xác nhận | - | - |
 | 2. Phê duyệt | AM | Từ chối | Từ chối | - | - |
-| | | Duyệt | Đã xác nhận | - | - |
+| | AM | Duyệt | Đã xác nhận | - | - |
 | 3. Tạo yêu cầu | System | - | Đã xác nhận | Chờ xuất kho | - |
 | 4. Xuất kho | WK | Từ chối | Từ chối | Từ chối | - |
-| | | Đồng ý | Đã xác nhận | Chờ phê duyệt | - |
+| | WK | Đồng ý | Đã xác nhận | Chờ phê duyệt | - |
 | 5. Phê duyệt | Warehouse Mgr. | Từ chối | Từ chối | Từ chối | - |
-| | | Duyệt | Đã xác nhận | Chờ xác nhận | - |
+| | Warehouse Mgr. | Duyệt | Đã xác nhận | Chờ xác nhận | - |
 | 6. Nhận hàng | BU User | Từ chối | Từ chối | Từ chối | - |
-| | | Xác nhận | Đã xác nhận | Đã nhận tài sản | Đang sử dụng |
+| | BU User | Xác nhận | Đã xác nhận | Đã nhận tài sản | Đang sử dụng |
 
-### Bảng State Transitions - Thanh lý tài sản (Bán trực tiếp)
+### Bảng trạng thái quy trình Thanh lý - Bán trực tiếp
 
-| Sub-process | PIC | Action | Request Status | Warehouse Status | Asset Status | Note |
-|-------------|-----|--------|----------------|------------------|--------------|------|
-| 1. Tạo yêu cầu | AMP | Lưu | Đang tạo | - | - | - |
-| | | Gửi | Chờ kiểm soát | - | - | - |
-| 2. Kiểm soát | Checker | Từ chối | Từ chối | - | - | - |
-| | | Yêu cầu bổ sung thông tin | Bổ sung thông tin | - | - | - |
-| | | Đồng ý | Chờ phê duyệt | - | - | - |
-| 3. Phê duyệt | Approver | Từ chối |
+| Sub-process | PIC | Action | Rq Status | Asset Status | Note |
+|-------------|-----|---------|-----------|--------------|------|
+| 1. Tạo yêu cầu | AMP | Lưu | Đang tạo | - | - |
+| | AMP | Gửi | Chờ kiểm soát | - | - |
+| 2. Kiểm soát | Checker | Từ chối | Từ chối | - | - |
+| | Checker | Yêu cầu bổ sung thông tin | Bổ sung thông tin | - | - |
+| |
 
 ---
 *Source: Status.csv | Rows: 87 | Generated by Claude Sonnet 4.5*
