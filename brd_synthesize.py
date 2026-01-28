@@ -842,20 +842,20 @@ def synthesize_brd(client: Anthropic, summaries: dict, max_tokens: int = 32000) 
         if validation['invalid_syntax']:
             print(f"  ⚠️  Invalid {{#id}} syntax found in {len(validation['invalid_syntax'])} headers")
         
-        if validation['broken_links']:
-            unique_broken = set(validation['broken_links'])
-            print(f"  ⚠️  Broken links ({len(unique_broken)} unique): {list(unique_broken)[:10]}")
+        # if validation['broken_links']:
+            # unique_broken = set(validation['broken_links'])
+            # print(f"  ⚠️  Broken links ({len(unique_broken)} unique): {list(unique_broken)[:10]}")
             
-            # Attempt to auto-fix broken links
-            brd_content = fix_broken_links(brd_content, validation)
+              # Attempt to auto-fix broken links
+            # brd_content = fix_broken_links(brd_content, validation)
             
-            # Re-validate after fixes
-            validation_after = validate_brd_anchors(brd_content, sheet_ids)
-            remaining_broken = set(validation_after.get('broken_links', []))
-            if remaining_broken:
-                print(f"  ⚠️  Remaining broken links after fix: {remaining_broken}")
-            else:
-                print(f"  ✅ All broken links fixed!")
+              # Re-validate after fixes
+            # validation_after = validate_brd_anchors(brd_content, sheet_ids)
+            # remaining_broken = set(validation_after.get('broken_links', []))
+            # if remaining_broken:
+                # print(f"  ⚠️  Remaining broken links after fix: {remaining_broken}")
+            # else:
+                # print(f"  ✅ All broken links fixed!")
         
         # Validate image tokens
         print("\nValidating image tokens...")
@@ -1065,10 +1065,10 @@ def main():
     brd_content = synthesize_brd(client, summaries, args.max_tokens)
     
     # Post-process to fix any remaining link issues
-    if not args.skip_post_process:
-        print("\nPost-processing links...", end=" ", flush=True)
-        brd_content = post_process_links(brd_content)
-        print("✓")
+    # if not args.skip_post_process:
+        # print("\nPost-processing links...", end=" ", flush=True)
+        # brd_content = post_process_links(brd_content)
+        # print("✓")
     
     # Write output
     print("Writing BRD...", end=" ", flush=True)
