@@ -4,7 +4,7 @@ BRD Pipeline - Excel to Markdown Business Requirements Document
 
 Orchestrates the full pipeline:
 1. extract_all_sheets.py - Extract all sheets from Excel to CSV
-2. summarize_sheets.py - Summarize each sheet using Claude API
+2. summarize_sheets.py - Summarize each sheet using Claude API (with image analysis)
 3. brd_synthesize.py - Synthesize summaries into final BRD
 
 Usage:
@@ -42,6 +42,7 @@ import shutil
 from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
+from typing import Tuple
 
 # Load environment variables
 load_dotenv()
@@ -52,7 +53,7 @@ def get_script_dir() -> Path:
     return Path(__file__).parent.resolve()
 
 
-def run_command(cmd: list, description: str) -> tuple[bool, float]:
+def run_command(cmd: list, description: str) -> Tuple[bool, float]:
     """
     Run a command and return success status and duration.
     
@@ -174,6 +175,19 @@ def main():
     )
     
     parser.add_argument(
+        '--skip-images',
+        action='store_true',
+        help='Skip image analysis during summarization (faster but less detailed)'
+    )
+    
+    parser.add_argument(
+        '--workers', '-w',
+        type=int,
+        default=5,
+        help='Number of parallel workers for summarization (default: 5)'
+    )
+    
+    parser.add_argument(
         '--clean',
         action='store_true',
         help='Clean output directory before starting'
@@ -227,6 +241,8 @@ def main():
     print("="*60)
     print(f"Input:       {excel_path}")
     print(f"Output dir:  {output_dir}")
+    print(f"Workers:     {args.workers}")
+    print(f"Image analysis: {'Disabled' if args.skip_images else 'Enabled'}")
     print(f"Started:     {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("="*60)
     
@@ -264,7 +280,7 @@ def main():
             sys.exit(1)
     
     # =========================================================================
-    # STEP 2: Summarize each sheet using Claude
+    # STEP 2: Summarize each sheet using Claude (with optional image analysis)
     # =========================================================================
     if not args.skip_summarize:
         summarize_script = script_dir / 'summarize_sheets.py'
@@ -272,12 +288,21 @@ def main():
         cmd = [
             sys.executable, str(summarize_script),
             str(sheets_dir), str(summaries_dir),
-            '--api-key', api_key
+            '--api-key', api_key,
+            '--workers', str(args.workers)
         ]
+        
+        # Add images directory if image analysis is enabled and images exist
+        if not args.skip_images and images_dir.exists() and any(images_dir.glob('*')):
+            cmd.extend(['--images-dir', str(images_dir)])
+            image_count = len(list(images_dir.glob('*')))
+            print(f"\n🖼️  Found {image_count} images for visual analysis")
+        elif not args.skip_images:
+            print(f"\n⚠️  No images found in {images_dir}, proceeding without image analysis")
         
         success, duration = run_command(
             cmd,
-            "Step 2/3: Summarizing sheets with Claude"
+            "Step 2/3: Summarizing sheets with Claude" + (" (with image analysis)" if not args.skip_images else "")
         )
         timings['summarize'] = duration
         

@@ -7,12 +7,13 @@ structured markdown summaries suitable for BRD synthesis.
 Uses parallel API calls for faster processing.
 
 Usage:
-    python summarize_sheets.py <sheets_dir> <output_dir> [--api-key KEY] [--workers N]
+    python summarize_sheets.py <sheets_dir> <output_dir> --images-dir <images_dir> [--api-key KEY] [--workers N]
 
 Example:
     python summarize_sheets.py output/sheets output/summaries
     python summarize_sheets.py output/sheets output/summaries --api-key sk-ant-...
     python summarize_sheets.py output/sheets output/summaries --workers 10
+    python summarize_sheets.py output/sheets output/summaries --workers 5 --images-dir output/images
     
 Environment:
     ANTHROPIC_API_KEY - API key for Claude (loaded from .env file or environment)
@@ -42,6 +43,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from threading import Lock
 from anthropic import Anthropic
 from dotenv import load_dotenv
+
+from typing import Optional, Tuple, List, Dict
 
 # Load environment variables from .env file
 load_dotenv()
@@ -116,7 +119,7 @@ def safe_print(*args, **kwargs):
         print(*args, **kwargs)
 
 
-def load_csv_content(csv_path: str, max_rows: int = 500) -> tuple[str, int]:
+def load_csv_content(csv_path: str, max_rows: int = 500) -> Tuple[str, int]:
     """
     Load CSV content as text, limited to max_rows.
     
@@ -146,7 +149,7 @@ def load_csv_content(csv_path: str, max_rows: int = 500) -> tuple[str, int]:
         return "", 0
 
 
-def extract_image_references(csv_content: str) -> list[dict]:
+def extract_image_references(csv_content: str) -> List[Dict]:
     """
     Extract all markdown image references from CSV content.
     
@@ -184,7 +187,7 @@ def extract_image_references(csv_content: str) -> list[dict]:
     return results
 
 
-def load_image_as_base64(image_path: str) -> tuple[str, str] | None:
+def load_image_as_base64(image_path: str) -> Optional[Tuple[str, str]]:
     """
     Load an image file and return as base64 with media type.
     
