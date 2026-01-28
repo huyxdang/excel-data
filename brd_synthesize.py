@@ -319,16 +319,33 @@ Quy trình này xử lý việc tạo yêu cầu nhập kho tự động khi tà
 
 Các bản tóm tắt sheet thường tham chiếu đến hình ảnh (ảnh chụp màn hình UI, sơ đồ quy trình, mockup). Những hình ảnh này PHẢI được nhúng vào BRD cuối cùng.
 
+### CRITICAL: GIỮ NGUYÊN CHÍNH XÁC TÊN FILE ẢNH
+
+**KHÔNG BAO GIỜ** tự đặt tên file ảnh. **LUÔN LUÔN** copy chính xác tên file từ bản tóm tắt.
+
+| ❌ SAI | ✅ ĐÚNG |
+|--------|---------|
+| `images/warehouse_confirmation.png` | `images/5_1_3a_B5_images2.png` |
+| `images/5.1.2a_B5_image2.png` | `images/5_12a_B6_image2.png` |
+| `images/asset_dashboard.png` | `images/4_1_B3_image1.png` |
+| `images/create_request_ui.png` | `images/5_1_1a_B5_image1.png` |
+
+**Quy tắc:**
+1. **Copy-paste chính xác** tên file từ bản tóm tắt sheet
+2. **KHÔNG dịch** tên file sang tiếng Việt hoặc tiếng Anh mô tả
+3. **KHÔNG thay đổi** định dạng số (underscore `_` vs dot `.`)
+4. **KHÔNG thêm/bớt** ký tự nào trong tên file
+5. **Kiểm tra kỹ** số sheet ID (5_1_3a vs 5_12a vs 5.1.2a)
+
 ### Định dạng Đường dẫn Hình ảnh
 
-Hình ảnh được lưu trong thư mục con `images/`. Khi bản tóm tắt đề cập đến hình ảnh như:
-- `images/5_1_1a_B5_image1.png`
-- `5_1_1a_B5_image1.png`
+Hình ảnh được lưu trong thư mục con `images/`. Khi bản tóm tắt đề cập đến hình ảnh, nhúng với **TÊN FILE CHÍNH XÁC**:
 
-Nhúng nó sử dụng định dạng này:
 ```markdown
-![Mô tả giao diện](images/5_1_1a_B5_image1.png)
+![Mô tả giao diện](images/5_1_3a_B5_images2.png)
 ```
+
+**LƯU Ý:** Phần mô tả trong `![...]` có thể viết bằng tiếng Việt, nhưng phần `(images/...)` PHẢI giữ nguyên tên file gốc.
 
 ### Vị trí Đặt Hình ảnh
 
@@ -342,9 +359,11 @@ Nhúng nó sử dụng định dạng này:
 Quy trình này xử lý việc tạo yêu cầu nhập kho tự động...
 ```
 
-### QUAN TRỌNG: KHÔNG Bỏ qua Hình ảnh
+### QUAN TRỌNG: KHÔNG Bỏ qua Hình ảnh, KHÔNG Đổi Tên
 
-Nếu bản tóm tắt sheet đề cập đến file hình ảnh, bạn PHẢI bao gồm nó trong đầu ra.
+- Nếu bản tóm tắt sheet đề cập đến file hình ảnh, bạn PHẢI bao gồm nó trong đầu ra
+- Bạn PHẢI sử dụng **CHÍNH XÁC** tên file như trong bản tóm tắt
+- Nếu không chắc chắn tên file, hãy để nguyên như trong input
 
 ---
 
@@ -437,6 +456,7 @@ Trước khi hoàn thành phản hồi, xác minh:
 9. ✅ Section cha liên kết đến các section con
 10. ✅ Có ít nhất 20+ liên kết nội bộ
 11. ✅ Tất cả hình ảnh được nhúng
+12. ✅ **TÊN FILE ẢNH CHÍNH XÁC** - copy nguyên từ bản tóm tắt, KHÔNG tự đặt tên
 """
 
 
@@ -452,7 +472,7 @@ Vui lòng tổng hợp những bản tóm tắt này thành một Tài liệu Y�
 5. **DÙNG PROSE** cho các sheet có mức độ chi tiết = `tổng-quan`
 6. Bảo toàn NỘI DUNG ĐẦY ĐỦ từ mỗi sheet
 7. **THÊM THAM CHIẾU CHÉO:** Nhắm đến 20+ liên kết nội bộ
-8. **NHÚNG TẤT CẢ HÌNH ẢNH** với định dạng ![mô tả](images/filename.png)
+8. **NHÚNG TẤT CẢ HÌNH ẢNH với TÊN FILE CHÍNH XÁC** - copy nguyên tên từ bản tóm tắt, KHÔNG tự đặt tên mô tả như `warehouse_confirmation.png`
 
 ---
 
@@ -462,9 +482,8 @@ Vui lòng tổng hợp những bản tóm tắt này thành một Tài liệu Y�
 
 ---
 
-Vui lòng cung cấp BRD hoàn chỉnh ở định dạng Markdown với tiêu đề section giữ nguyên từ tên sheet gốc, tables được giữ nguyên khi cần, và tham chiếu chéo nội bộ phong phú.
+Vui lòng cung cấp BRD hoàn chỉnh ở định dạng Markdown với tiêu đề section giữ nguyên từ tên sheet gốc, tables được giữ nguyên khi cần, tham chiếu chéo nội bộ phong phú, và **tên file ảnh chính xác từ bản tóm tắt**.
 """
-
 
 def load_all_summaries(summaries_dir: str) -> dict:
     """
