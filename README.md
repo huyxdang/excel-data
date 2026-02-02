@@ -3,11 +3,11 @@
 <p align="center">
   <strong>Convert a complicated Excel (e.g., BRD) into LLM-friendly format in Markdown</strong>
 </p>
----
+
 
 ### Overview
 
-Applicable to prep-process large, complicated Excel documents for **Enterprises**. 
+Applicable to prep-process large, complicated Excel documents for **Enterprises (e.g., Banks)**. 
 
 Sử dụng LLM để chuyển file Excel BRD thành dạng Markdown để giúp BA dễ đọc, hiểu, và giao việc cho devs dễ dàng hơn. 
 
